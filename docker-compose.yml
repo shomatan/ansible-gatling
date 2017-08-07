@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 
 services:
   nginx-proxy:
@@ -38,9 +38,8 @@ services:
       LETSENCRYPT_TEST: "false"
     ports:
       - "29418:29418"
-    expose:
-      - 8080
     volumes:
+      -
       - ./volumes/gitbucket/repositories:/gitbucket/repositories
       - ./volumes/gitbucket/data:/gitbucket/data
     restart: always
