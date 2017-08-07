@@ -37,9 +37,8 @@ services:
       LETSENCRYPT_EMAIL: git@example.com
       LETSENCRYPT_TEST: "false"
     ports:
-      - "29418:29418"
+      - 29418:29418
     volumes:
-      -
       - ./volumes/gitbucket/repositories:/gitbucket/repositories
       - ./volumes/gitbucket/data:/gitbucket/data
     restart: always
