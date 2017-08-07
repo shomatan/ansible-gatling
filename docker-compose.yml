@@ -33,6 +33,7 @@ services:
       # nginx-proxy
       VIRTUAL_HOST: git.example.com
       VIRTUAL_PORT: 8080
+      # letsencrypt
       LETSENCRYPT_HOST: git.example.com
       LETSENCRYPT_EMAIL: git@example.com
       LETSENCRYPT_TEST: "false"
