@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    privileged: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./volumes/certs:/etc/nginx/certs:ro
+      - /etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /usr/share/nginx/html
+    restart: always
+ 
+  nginx-letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: nginx-letsencrypt
+    privileged: true
+    volumes:
+      - ./volumes/certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    volumes_from:
+      - nginx-proxy
+    restart: always
+
+  gitbucket:
+    container_name: gitbucket-app
+    image: shomatan/gitbucket:4.15.0
+    environment:
+      # nginx-proxy
+      VIRTUAL_HOST: git.example.com
+      VIRTUAL_PORT: 8080
+      LETSENCRYPT_HOST: git.example.com
+      LETSENCRYPT_EMAIL: git@example.com
+      LETSENCRYPT_TEST: "false"
+    ports:
+      - "29418:29418"
+    expose:
+      - 8080
+    volumes:
+      - ./volumes/gitbucket/repositories:/gitbucket/repositories
+      - ./volumes/gitbucket/data:/gitbucket/data
+    restart: always
+
+  db:
+    container_name: gitbucket-db
+    image: postgres:9.5-alpine
+    environment:
+      POSTGRES_DB: gitbucket
+      POSTGRES_USER: gitbucket
+      POSTGRES_PASSWORD: gitbucket
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    restart: always
